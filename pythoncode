@@ -1,37 +1,57 @@
-def calcular_investimento_inicial(valor_inicial, taxa_retorno_mensal, taxa_acerto, media_odds):
-    # Calcula a taxa de retorno diária
-    taxa_retorno_diaria = (1 + taxa_retorno_mensal) ** (1 / 30) - 1
+def calcular_investimento_mensal(banca_inicial, taxa_retorno_mensal, taxa_acerto, num_apostas_diarias, odds_min, odds_max):
+    # Calcula o valor necessário para ganhar 15% por mês
+    valor_alvo = banca_inicial * (1 + taxa_retorno_mensal)
 
-    # Calcula a taxa de falha diária
-    taxa_falha_diaria = 1 - taxa_acerto
+    # Calcula o número total de apostas no mês
+    num_apostas_mensais = num_apostas_diarias * 30
 
-    # Calcula o fator de multiplicação necessário para alcançar o retorno mensal desejado
-    fator_multiplicacao = (1 + taxa_retorno_diaria) / (1 - taxa_falha_diaria * (1 - media_odds))
+    # Calcula o número de apostas ganhas e perdidas com base na taxa de acerto
+    num_apostas_ganhas = int(num_apostas_mensais * taxa_acerto)
+    num_apostas_perdidas = num_apostas_mensais - num_apostas_ganhas
 
-    # Calcula o investimento inicial necessário em euros
-    investimento_inicial = valor_inicial * (fator_multiplicacao - 1)
+    # Calcula o valor médio ganho e perdido por aposta
+    valor_medio_ganho = (valor_alvo - banca_inicial) / num_apostas_ganhas
+    valor_medio_perdido = banca_inicial * 0.02
 
-    # Calcula o investimento diário necessário em euros
-    investimento_diario = investimento_inicial / 30
+    # Calcula o valor médio a ser ganho e perdido por dia
+    valor_medio_ganho_diario = valor_medio_ganho / 30
+    valor_medio_perdido_diario = valor_medio_perdido / 30
 
-    return investimento_inicial, investimento_diario
+    # Calcula o valor máximo investido por aposta com base nas odds máximas
+    valor_max_investido = banca_inicial * 0.02 / odds_min
+
+    # Calcula o valor mínimo investido por aposta com base nas odds mínimas
+    valor_min_investido = banca_inicial * 0.02 / odds_max
+
+    # Calcula o valor total necessário para ter ganhos de 15% por mês
+    valor_necessario = (valor_medio_ganho_diario * num_apostas_diarias * 30) - (valor_medio_perdido_diario * num_apostas_diarias * 30)
+
+    return valor_necessario, valor_max_investido, valor_min_investido
 
 
-# Valor inicial em euros
-valor_inicial = 100
+# Banca inicial em euros
+banca_inicial = 100
 
 # Taxa de retorno mensal desejada (15% = 0.15)
-taxa_retorno_mensal = 0.10
+taxa_retorno_mensal = 0.15
 
-# Taxa de acerto (60% = 0.6)
-taxa_acerto = 0.6
+# Taxa de acerto mensal (60% = 0.6)
+taxa_acerto = 0.4
 
-# Média das odds das apostas
-media_odds = 1.35
+# Número de apostas diárias
+num_apostas_diarias = 3
 
-# Calcula o investimento inicial e diário necessários
-investimento_inicial, investimento_diario = calcular_investimento_inicial(valor_inicial, taxa_retorno_mensal, taxa_acerto, media_odds)
+# Odds mínimas e máximas
+odds_min = 1.4
+odds_max = 1.7
 
-# Imprime o resultado
-print(f"Você precisa investir um valor inicial de {investimento_inicial:.2f} euros para ganhar 15% por mês em apostas.")
-print(f"Isso corresponde a um investimento diário de {investimento_diario:.2f} euros.")
+# Calcula o valor necessário para ter ganhos de 15% por mês
+valor_necessario, valor_max_investido, valor_min_investido = calcular_investimento_mensal(
+    banca_inicial, taxa_retorno_mensal, taxa_acerto, num_apostas_diarias, odds_min, odds_max)
+
+# Imprime os resultados
+print(f"Para ter ganhos de 15% por mês:")
+print(f"Valor necessário: {valor_necessario:.2f} euros")
+print(f"Valor máximo a ser investido por aposta: {valor_max_investido:.2f} euros")
+print(f"Valor mínimo a ser investido por aposta: {valor_min_investido:.2f} euros")
+
